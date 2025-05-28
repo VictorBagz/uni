@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduShare | Learning Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0fdf4;
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(5, 150, 105, 0.2);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .material-card:hover .download-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .download-btn {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(5, 150, 105, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logo-container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(5, 150, 105, 0.4);
+        }
+        
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            line-height: 1;
+        }
+        
+        .logo-text span {
+            font-size: 14px;
+            display: block;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+        
+        .role-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .role-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(5, 150, 105, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Splash Screen -->
+    <div id="splashScreen" class="fixed inset-0 flex flex-col items-center justify-center bg-white z-50">
+        <div class="logo-container pulse" onclick="showRoleSelection()">
+            <div class="logo-text">
+                Edu<span>Share</span>
+            </div>
+        </div>
+        <p class="mt-6 text-gray-600">Tap the logo to begin</p>
+    </div>
+
+    <!-- Role Selection Modal -->
+    <div id="roleSelectionModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-40 hidden">
+        <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-md slide-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Select Your Role</h2>
+                <button onclick="hideRoleSelection()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="grid grid-cols-1 gap-6">
+                <!-- Student Role Card -->
+                <div class="role-card bg-white rounded-xl shadow-sm p-6 border border-gray-100" onclick="selectRole('student')">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-emerald-100 text-emerald-700 mr-4">
+                            <i class="fas fa-user-graduate text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">Student</h3>
+                            <p class="text-sm text-gray-600">Access study materials, assignments, and grades</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lecturer Role Card -->
+                <div class="role-card bg-white rounded-xl shadow-sm p-6 border border-gray-100" onclick="selectRole('lecturer')">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-emerald-100 text-emerald-700 mr-4">
+                            <i class="fas fa-chalkboard-teacher text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">Lecturer</h3>
+                            <p class="text-sm text-gray-600">Upload materials, manage courses, and track students</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Login Modal -->
+    <div id="studentLoginModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md slide-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Student Login</h2>
+                <button onclick="closeStudentLoginModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="studentLoginForm">
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="studentId">Student ID</label>
+                    <input type="text" id="studentId" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="ST2023001" required>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 mb-2" for="studentPassword">Password</label>
+                    <input type="password" id="studentPassword" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="w-full gradient-bg text-white py-2 rounded-lg font-medium hover:opacity-90 transition duration-300">
+                    Sign In
+                </button>
+            </form>
+            <div class="mt-4 text-center text-sm text-gray-600">
+                <p>Forgot password? <a href="#" class="text-emerald-600 hover:underline">Reset here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lecturer Login Modal -->
+    <div id="lecturerLoginModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md slide-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Lecturer Login</h2>
+                <button onclick="closeLecturerLoginModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="lecturerLoginForm">
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="lecturerEmail">Email</label>
+                    <input type="email" id="lecturerEmail" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="lecturer@university.edu" required>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 mb-2" for="lecturerPassword">Password</label>
+                    <input type="password" id="lecturerPassword" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="w-full gradient-bg text-white py-2 rounded-lg font-medium hover:opacity-90 transition duration-300">
+                    Sign In
+                </button>
+            </form>
+            <div class="mt-4 text-center text-sm text-gray-600">
+                <p>Forgot password? <a href="#" class="text-emerald-600 hover:underline">Reset here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student App Container -->
+    <div id="studentAppContainer" class="hidden">
+        <!-- Sidebar -->
+        <div class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full md:translate-x-0 transition duration-300 ease-in-out z-40" id="studentSidebar">
+            <div class="flex items-center justify-center h-16 gradient-bg">
+                <h1 class="text-white text-xl font-bold">EduShare</h1>
+            </div>
+            <div class="p-4">
+                <div class="flex items-center p-3 bg-emerald-50 rounded-lg mb-6">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Student" class="w-10 h-10 rounded-full mr-3">
+                    <div>
+                        <p class="font-medium text-gray-800">Sarah Johnson</p>
+                        <p class="text-xs text-emerald-600">Computer Science</p>
+                    </div>
+                </div>
+                <nav>
+                    <a href="#" class="flex items-center p-3 text-emerald-700 rounded-lg bg-emerald-100 mb-2">
+                        <i class="fas fa-home mr-3"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="flex items-center p-3 text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg mb-2">
+                        <i class="fas fa-book mr-3"></i>
+                        <span>My Courses</span>
+                    </a>
+                    <a href="#" class="flex items-center p-3 text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg mb-2">
+                        <i class="fas fa-file-download mr-3"></i>
+                        <span>Study Materials</span>
+                    </a>
+                    <a href="#" class="flex items-center p-3 text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg mb-2">
+                        <i class="fas fa-tasks mr-3"></i>
+                        <span>Assignments</span>
+                    </a>
+                    <a href="#" class="flex items-center p-3 text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg mb-2">
+                        <i class="fas fa-calendar-alt mr-3"></i>
+                        <span>Schedule</span>
+                    </a>
+                    <a href="#" class="flex items-center p-3 text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg mb-2">
+                        <i class="fas fa-graduation-cap mr-3"></i>
+                        <span>Grades</span>
+                    </a>
+                </nav>
+            </div>
+            <div class="absolute bottom-0 w-full p-4">
+                <button onclick="logout()" class="flex items-center w-full p-3 text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg">
+                    <i class="fas fa-sign-out-alt mr-3"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="md:ml-64 transition-all duration-300">
+            <!-- Header -->
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <div class="flex items-center">
+                        <button onclick="toggleStudentSidebar()" class="md:hidden text-gray-600 mr-4">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <h2 class="text-xl font-semibold text-gray-800">Study Materials</h2>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="text-gray-600 hover:text-emerald-700">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-600 hover:text-emerald-700">
+                                <i class="fas fa-search text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <main class="p-6">
+                <!-- Welcome Banner -->
+                <div class="gradient-bg text-white rounded-xl p-6 mb-6 fade-in">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <div>
+                            <h1 class="text-2xl font-bold mb-2">Welcome Back, Sarah</h1>
+                            <p class="opacity-90">You have 3 new materials uploaded by your lecturers this week.</p>
+                        </div>
+                        <button class="mt-4 md:mt-0 bg-white text-emerald-700 px-4 py-2 rounded-lg font-medium hover:bg-opacity-90 transition duration-300">
+                            View All Materials
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Course Filter -->
+                <div class="bg-white rounded-xl shadow-sm p-6 mb-6 fade-in">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 md:mb-0">Filter by Course</h3>
+                        <div class="flex space-x-2 overflow-x-auto pb-2 md:pb-0">
+                            <button class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg font-medium whitespace-nowrap">All Courses</button>
+                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium whitespace-nowrap hover:bg-gray-200">CS201</button>
+                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium whitespace-nowrap hover:bg-gray-200">CS301</button>
+                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium whitespace-nowrap hover:bg-gray-200">CS401</button>
+                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium whitespace-nowrap hover:bg-gray-200">MATH101</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Materials -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Recently Added Materials</h3>
+                        <button class="text-emerald-600 hover:text-emerald-800 text-sm font-medium">
+                            View All
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Material Card 1 -->
+                        <div class="bg-white rounded-xl shadow-sm p-6 material-card card-hover transition duration-300 fade-in relative">
+                            <div class="flex items-start mb-4">
+                                <div class="bg-emerald-100 text-emerald-700 rounded-lg p-3 mr-4">
+                                    <i class="fas fa-file-pdf text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Lecture 5 - Algorithms</h4>
+                                    <p class="text-sm text-gray-600">CS401 - Advanced Algorithms</p>
+                                    <div class="flex items-center mt-2 text-sm text-gray-500">
+                                        <i class="fas fa-user-tie mr-2"></i>
+                                        <span>Dr. Jonathan Smith</span>
+                                    </div>
+                                    <div class="flex items-center mt-1 text-sm text-gray-500">
+                                        <i class="fas fa-calendar-day mr-2"></i>
+                                        <span>May 15, 2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center mt-4">
+                                <span class="text-sm text-gray-500">2.4 MB • PDF</span>
+                                <button class="download-btn gradient-bg text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition duration-300">
+                                    <i class="fas fa-download mr-2"></i> Download
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Material Card 2 -->
+                        <div class="bg-white rounded-xl shadow-sm p-6 material-card card-hover transition duration-300 fade-in relative">
+                            <div class="flex items-start mb-4">
+                                <div class="bg-emerald-100 text-emerald-700 rounded-lg p-3 mr-4">
+                                    <i class="fas fa-file-video text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Week 3 Recording</h4>
+                                    <p class="text-sm text-gray-600">CS201 - Data Structures</p>
+                                    <div class="flex items-center mt-2 text-sm text-gray-500">
+                                        <i class="fas fa-user-tie mr-2"></i>
+                                        <span>Prof. Emily Wilson</span>
+                                    </div>
+                                    <div class="flex items-center mt-1 text-sm text-gray-500">
+                                        <i class="fas fa-calendar-day mr-2"></i>
+                                        <span>May 12, 2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center mt-4">
+                                <span class="text-sm text-gray-500">156 MB • MP4</span>
+                                <button class="download-btn gradient-bg text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition duration-300">
+                                    <i class="fas fa-download mr-2"></i> Download
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Material Card 3 -->
+                        <div class="bg-white rounded-xl shadow-sm p-6 material-card card-hover transition duration-300 fade-in relative">
+                            <div class="flex items-start mb-4">
+                                <div class="bg-emerald-100 text-emerald-700 rounded-lg p-3 mr-4">
+                                    <i class="fas fa-file-word text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Assignment Brief</h4>
+                                    <p class="text-sm text-gray-600">CS301 - Software Engineering</p>
+                                    <div class="flex items-center mt-2 text-sm text-gray-500">
+                                        <i class="fas fa-user-tie mr-2"></i>
+                                        <span>Dr. Michael Brown</span>
+                                    </div>
+                                    <div class="flex items-center mt-1 text-sm text-gray-500">
+                                        <i class="fas fa-calendar-day mr-2"></i>
+                                        <span>May 10, 2023</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center mt-4">
+                                <span class="text-sm text-gray-500">1.2 MB • DOCX</span>
+                                <button class="download-btn gradient-bg text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition duration-300">
+                                    <i class="fas fa-download mr-2"></i> Download
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Materials Table -->
+                <div class="bg-white rounded-xl shadow-sm p-6 fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800">All Study Materials</h3>
+                        <div class="relative">
+                            <input type="text" placeholder="Search materials..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Material</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lecturer</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50 transition duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-700">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Lecture 5 - Algorithms</div>
+                                                <div class="text-sm text-gray-500">2.4 MB</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">CS401 - Advanced Algorithms</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Dr. Jonathan Smith</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">May 15, 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-emerald-600 hover:text-emerald-900">
+                                            <i class="fas fa-download mr-1"></i> Download
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-700">
+                                                <i class="fas fa-file-video"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Week 3 Recording</div>
+                                                <div class="text-sm text-gray-500">156 MB</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">CS201 - Data Structures</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Prof. Emily Wilson</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">May 12, 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-emerald-600 hover:text-emerald-900">
+                                            <i class="fas fa-download mr-1"></i> Download
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-700">
+                                                <i class="fas fa-file-word"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Assignment Brief</div>
+                                                <div class="text-sm text-gray-500">1.2 MB</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">CS301 - Software Engineering</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Dr. Michael Brown</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">May 10, 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-emerald-600 hover:text-emerald-900">
+                                            <i class="fas fa-download mr-1"></i> Download
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-700">
+                                                <i class="fas fa-file-powerpoint"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Lecture Slides - Week 2</div>
+                                                <div class="text-sm text-gray-500">4.7 MB</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">CS201 - Data Structures</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Prof. Emily Wilson</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">May 8, 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-emerald-600 hover:text-emerald-900">
+                                            <i class="fas fa-download mr-1"></i> Download
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="flex justify-between items-center mt-6">
+                        <div class="text-sm text-gray-500">
+                            Showing 1 to 4 of 12 entries
+                        </div>
+                        <div class="flex space-x-1">
+                            <button class="px-3 py-1 border rounded-lg text-gray-700 bg-gray-50">Previous</button>
+                            <button class="px-3 py-1 border rounded-lg bg-emerald-100 text-emerald-700 font-medium">1</button>
+                            <button class="px-3 py-1 border rounded-lg text-gray-700 hover:bg-gray-50">2</button>
+                            <button class="px-3 py-1 border rounded-lg text-gray-700 hover:bg-gray-50">3</button>
+                            <button class="px-3 py-1 border rounded-lg text-gray-700 hover:bg-gray-50">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Lecturer App Container -->
+    <div id="lecturerAppContainer" class="hidden">
+        <!-- Sidebar -->
+        <div class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full md:translate-x-0 transition duration-300 ease-in-out z-40" id="lecturerSidebar">
+            <div class="flex items-center justify-center h-16 gradient-bg">
+                <h1 class="text-white text-xl font-bold">EduShare</h1>
+            </div>
+            <div class="p-4">
+                <div class="flex items-center p-3 bg-emerald-50 rounded-lg mb-6">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Lecturer" class="w-10 h-10 rounded-full mr-3">
+                    <div>
+                        <p class="font-medium text-gray-800">Dr. Jonathan Smith</p>
+                        <p class="text-xs text-emerald-600">Computer Science Dept.</p>
+                    </div>
+                </div>
+                <nav>
+                    <a href="#" class="flex items-center p-3 text-emerald-700 rounded-lg bg-emerald-100 mb-2">
+                        <i class="fas fa-home mr-3"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="flex items-center p-3 text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg mb-2">
+                        <i class="fas fa-book mr-3"></i>
+                        <span>My Courses</span>
+                    </a>
+                    <a href="#" class="flex items-center p-3 text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg mb-2">
+                        <i class="fas fa-upload mr-3"></i>
+                        <span>Upload Materials</span>
+                    </a>
+                    <a href="#" class="flex items-center p-3 text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg mb-2">
+                        <i class="fas fa-users mr-3"></i>
+                        <span>Students</span>
+                    </a>
+                    <a href="#" class="flex items-center p-3 text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg mb-2">
+                        <i class="fas fa-calendar-alt mr-3"></i>
+                        <span>Schedule</span>
+                    </a>
+                    <a href="#" class="flex items-center p-3 text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg mb-2">
+                        <i class="fas fa-cog mr-3"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </div>
+            <div class="absolute bottom-0 w-full p-4">
+                <button onclick="logout()" class="flex items-center w-full p-3 text-gray-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg">
+                    <i class="fas fa-sign-out-alt mr-3"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="md:ml-64 transition-all duration-300">
+            <!-- Header -->
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <div class="flex items-center">
+                        <button onclick="toggleLecturerSidebar()" class="md:hidden text-gray-600 mr-4">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <h2 class="text-xl font-semibold text-gray-800">Lecturer Dashboard</h2>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="text-gray-600 hover:text-emerald-700">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-600 hover:text-emerald-700">
+                                <i class="fas fa-envelope text-xl"></i>
+                                <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <main class="p-6">
+                <!-- Welcome Banner -->
+                <div class="gradient-bg text-white rounded-xl p-6 mb-6 fade-in">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <div>
+                            <h1 class="text-2xl font-bold mb-2">Good Morning, Dr. Smith</h1>
+                            <p class="opacity-90">You have 3 classes today with 42 new student submissions to review.</p>
+                        </div>
+                        <button class="mt-4 md:mt-0 bg-white text-emerald-700 px-4 py-2 rounded-lg font-medium hover:bg-opacity-90 transition duration-300">
+                            View Schedule
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-xl shadow-sm p-6 card-hover transition duration-300 fade-in">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-emerald-100 text-emerald-700 mr-4">
+                                <i class="fas fa-book-open text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Active Courses</p>
+                                <p class="text-2xl font-bold text-gray-800">5</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-6 card-hover transition duration-300 fade-in">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-emerald-100 text-emerald-700 mr-4">
+                                <i class="fas fa-users text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Total Students</p>
+                                <p class="text-2xl font-bold text-gray-800">187</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-6 card-hover transition duration-300 fade-in">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-emerald-100 text-emerald-700 mr-4">
+                                <i class="fas fa-file-upload text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Materials Shared</p>
+                                <p class="text-2xl font-bold text-gray-800">32</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Uploads -->
+                <div class="bg-white rounded-xl shadow-sm p-6 mb-6 fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800">Recent Uploads</h3>
+                        <button class="text-emerald-600 hover:text-emerald-800 text-sm font-medium">
+                            View All
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Material</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Downloads</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-700">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Lecture 5 - Algorithms</div>
+                                                <div class="text-sm text-gray-500">2.4 MB</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">CS401 - Advanced Algorithms</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">May 15, 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">142</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <a href="#" class="text-emerald-600 hover:text-emerald-900 mr-3">View</a>
+                                        <a href="#" class="text-emerald-600 hover:text-emerald-900">Edit</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-700">
+                                                <i class="fas fa-file-video"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Week 3 Recording</div>
+                                                <div class="text-sm text-gray-500">156 MB</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">CS201 - Data Structures</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">May 12, 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">89</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <a href="#" class="text-emerald-600 hover:text-emerald-900 mr-3">View</a>
+                                        <a href="#" class="text-emerald-600 hover:text-emerald-900">Edit</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-700">
+                                                <i class="fas fa-file-word"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Assignment Brief</div>
+                                                <div class="text-sm text-gray-500">1.2 MB</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">CS301 - Software Engineering</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">May 10, 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">112</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <a href="#" class="text-emerald-600 hover:text-emerald-900 mr-3">View</a>
+                                        <a href="#" class="text-emerald-600 hover:text-emerald-900">Edit</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Upload New Material -->
+                <div class="bg-white rounded-xl shadow-sm p-6 mb-6 fade-in">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-6">Upload New Material</h3>
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-emerald-400 transition duration-300">
+                        <div class="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 mb-4">
+                            <i class="fas fa-cloud-upload-alt text-2xl"></i>
+                        </div>
+                        <h4 class="text-lg font-medium text-gray-800 mb-2">Drag and drop files here</h4>
+                        <p class="text-gray-500 mb-4">or</p>
+                        <button class="gradient-bg text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition duration-300">
+                            Browse Files
+                        </button>
+                        <p class="text-xs text-gray-500 mt-4">Supported formats: PDF, DOCX, PPTX, MP4 (Max 500MB)</p>
+                    </div>
+                    
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 mb-2" for="courseSelect">Select Course</label>
+                            <select id="courseSelect" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option>CS201 - Data Structures</option>
+                                <option>CS301 - Software Engineering</option>
+                                <option>CS401 - Advanced Algorithms</option>
+                                <option>CS101 - Introduction to Programming</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2" for="materialTitle">Material Title</label>
+                            <input type="text" id="materialTitle" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. Lecture 6 - Sorting Algorithms">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label class="block text-gray-700 mb-2" for="materialDescription">Description (Optional)</label>
+                        <textarea id="materialDescription" rows="3" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Add a brief description about this material..."></textarea>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-end">
+                        <button class="gradient-bg text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition duration-300">
+                            Upload Material
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upcoming Classes -->
+                <div class="bg-white rounded-xl shadow-sm p-6 fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800">Upcoming Classes</h3>
+                        <button class="text-emerald-600 hover:text-emerald-800 text-sm font-medium">
+                            View All
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-start p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition duration-300">
+                            <div class="bg-emerald-100 text-emerald-700 rounded-lg p-3 mr-4">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-800">CS201 - Data Structures</h4>
+                                <p class="text-sm text-gray-600">Lecture: Trees and Graphs</p>
+                                <div class="flex items-center mt-2 text-sm text-gray-500">
+                                    <i class="fas fa-calendar-day mr-2"></i>
+                                    <span>Today, 10:00 AM - 11:30 AM</span>
+                                </div>
+                                <div class="flex items-center mt-1 text-sm text-gray-500">
+                                    <i class="fas fa-map-marker-alt mr-2"></i>
+                                    <span>Building A, Room 205</span>
+                                </div>
+                            </div>
+                            <button class="text-emerald-600 hover:text-emerald-800">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-start p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition duration-300">
+                            <div class="bg-emerald-100 text-emerald-700 rounded-lg p-3 mr-4">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-800">CS301 - Software Engineering</h4>
+                                <p class="text-sm text-gray-600">Tutorial: Design Patterns</p>
+                                <div class="flex items-center mt-2 text-sm text-gray-500">
+                                    <i class="fas fa-calendar-day mr-2"></i>
+                                    <span>Today, 2:00 PM - 3:30 PM</span>
+                                </div>
+                                <div class="flex items-center mt-1 text-sm text-gray-500">
+                                    <i class="fas fa-map-marker-alt mr-2"></i>
+                                    <span>Building C, Room 312</span>
+                                </div>
+                            </div>
+                            <button class="text-emerald-600 hover:text-emerald-800">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Show splash screen on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('splashScreen').classList.remove('hidden');
+        });
+
+        // Role selection functions
+        function showRoleSelection() {
+            document.getElementById('splashScreen').classList.add('hidden');
+            document.getElementById('roleSelectionModal').classList.remove('hidden');
+        }
+
+        function hideRoleSelection() {
+            document.getElementById('roleSelectionModal').classList.add('hidden');
+            document.getElementById('splashScreen').classList.remove('hidden');
+        }
+
+        function selectRole(role) {
+            document.getElementById('roleSelectionModal').classList.add('hidden');
+            if (role === 'student') {
+                document.getElementById('studentLoginModal').classList.remove('hidden');
+            } else {
+                document.getElementById('lecturerLoginModal').classList.remove('hidden');
+            }
+        }
+
+        // Student login functions
+        document.getElementById('studentLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const studentId = document.getElementById('studentId').value;
+            const password = document.getElementById('studentPassword').value;
+            
+            if(studentId && password) {
+                setTimeout(() => {
+                    closeStudentLoginModal();
+                    document.getElementById('studentAppContainer').classList.remove('hidden');
+                    document.body.style.overflow = 'auto';
+                }, 800);
+            }
+        });
+
+        function closeStudentLoginModal() {
+            document.getElementById('studentLoginModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Lecturer login functions
+        document.getElementById('lecturerLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('lecturerEmail').value;
+            const password = document.getElementById('lecturerPassword').value;
+            
+            if(email && password) {
+                setTimeout(() => {
+                    closeLecturerLoginModal();
+                    document.getElementById('lecturerAppContainer').classList.remove('hidden');
+                    document.body.style.overflow = 'auto';
+                }, 800);
+            }
+        });
+
+        function closeLecturerLoginModal() {
+            document.getElementById('lecturerLoginModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Logout function
+        function logout() {
+            document.getElementById('studentAppContainer').classList.add('hidden');
+            document.getElementById('lecturerAppContainer').classList.add('hidden');
+            document.getElementById('splashScreen').classList.remove('hidden');
+            document.getElementById('studentId').value = '';
+            document.getElementById('studentPassword').value = '';
+            document.getElementById('lecturerEmail').value = '';
+            document.getElementById('lecturerPassword').value = '';
+        }
+
+        // Sidebar toggle functions
+        function toggleStudentSidebar() {
+            const sidebar = document.getElementById('studentSidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+
+        function toggleLecturerSidebar() {
+            const sidebar = document.getElementById('lecturerSidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+
+        // Animation for cards on scroll
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-init').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Simulate download functionality
+        document.querySelectorAll('.download-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                alert('Downloading file...');
+            });
+        });
+
+        // Simulate file upload
+        const uploadArea = document.querySelector('.border-dashed');
+        if (uploadArea) {
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('border-emerald-500', 'bg-emerald-50');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('border-emerald-500', 'bg-emerald-50');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('border-emerald-500', 'bg-emerald-50');
+                alert('Files ready to upload!');
+            });
+        }
+    </script>
+</body>
+</html>
